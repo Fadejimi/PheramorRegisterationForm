@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">RegisterationApp</string>
+    <string name="next">Next</string>
+    <string name="back">Previous</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+
+    <string name="name">Full Name</string>
+    <string name="zipcode">Enter Zip Code</string>
+    <string name="height">Height</string>
+
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
+    <string name="gender">Gender</string>
+    <string name="dob">DOB</string>
+
+    <string name="feet">Feet</string>
+    <string name="inches">Inches</string>
+    <string name="race">Race</string>
+    <string name="religion">Religion</string>
+
+    <string name="iam">I\'m a</string>
+    <string name="show_me">Show Me</string>
+    <string name="age_range">Age Range ( 18 &#8211; 60+ )</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="man">MAN</string>
+    <string name="woman">WOMAN</string>
+    <string name="type_zip_code">Type in your zip code to connect with local singles</string>
+
+    <string name="upload">Upload</string>
+
+    <string name="contact_info">Contact Info</string>
+    <string name="basic_info">Basic Info</string>
+    <string name="relationships">Relationships</string>
+    <string name="religious_info">Religious Information</string>
+    <string name="interested_info">Interested Information</string>
+    <string name="submit">SUBMIT</string>
+
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
