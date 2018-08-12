@@ -2,6 +2,7 @@ package com.pheramor.registerationapp.presenters;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -40,6 +41,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     private Gson gson;
     private List<Detail> contactDetails, infoDetails, interestedDetails, religionDetails;
     public static final String filename = "profile_image.jpg";
+    private static final String TAG = SummaryFragmentPresenter.class.getSimpleName();
 
     public SummaryFragmentPresenter(SummaryFragmentInterface fragment) {
         this.fragment = fragment;
@@ -104,6 +106,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
     @Override
     public void submit() {
+        Log.d(TAG, "submit() " );
         PostToFile postImage = new PostToFile(this);
         postImage.execute(imageBytes);
     }
@@ -120,6 +123,8 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     @Override
     public void onTaskCompleted(File f) {
         if (f != null) {
+            Log.d(TAG, "onTaskCompleted()");
+            fragment.setProgress(true);
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), f);
             MultipartBody.Part body = MultipartBody.Part.createFormData("upload",filename, reqFile);
 
@@ -130,13 +135,15 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
+                    fragment.setProgress(false);
                     sendToFinal();
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
+                    fragment.setProgress(false);
                     Toasty.error(fragment.getContext(), "Could not send the data",
-                            Toast.LENGTH_SHORT, true).show();
+                            Toast.LENGTH_LONG, true).show();
                 }
             });
         }
@@ -182,15 +189,18 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         protected File doInBackground(byte[]... bytes) {
             try {
                 File f = new File(fragment.getContext().getCacheDir(), filename);
-                f.createNewFile();
+                boolean sucess = f.createNewFile();
 
                 //write the bytes in file
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(bytes[0]);
-                fos.flush();
-                fos.close();
+                if (sucess) {
+                    FileOutputStream fos = new FileOutputStream(f);
+                    fos.write(bytes[0]);
+                    fos.flush();
+                    fos.close();
 
-                return f;
+                    return f;
+                }
+                return null;
             }
             catch (FileNotFoundException ex) {
                 ex.printStackTrace();
@@ -203,9 +213,13 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
         @Override
         protected void onPostExecute(File f) {
-            super.onPostExecute(f);
-            listerner.setProgress(false);
-            listerner.onTaskCompleted(f);
+            if (f != null) {
+                Log.d(TAG, "onPostExecute called");
+                super.onPostExecute(f);
+                listerner.setProgress(false);
+                listerner.onTaskCompleted(f);
+            }
+            Log.d(TAG, "onPostExecute failed");
         }
     }
 }
