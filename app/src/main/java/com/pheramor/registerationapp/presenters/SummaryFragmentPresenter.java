@@ -142,7 +142,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
             user.setPassword(HashingUtil.getSecurePassword(user.getPassword()));
             UserQuery query = APIClient.createService(UserQuery.class);
-            Call<Void> call = query.postUser(body, "https://external.dev.pheramor.com/");
+            Call<Void> call = query.postUser(body, getMap(), "https://external.dev.pheramor.com/");
 
             call.enqueue(new Callback<Void>() {
                 @Override
