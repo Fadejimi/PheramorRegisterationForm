@@ -42,7 +42,8 @@
 
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
-
+    <string name="congratulations">Congratulations you have successfully registered</string>
+    <string name="restart">Register another</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
