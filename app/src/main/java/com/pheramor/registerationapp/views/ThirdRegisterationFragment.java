@@ -24,6 +24,7 @@ public class ThirdRegisterationFragment extends Fragment implements ThirdFragmen
     private Button uploadButton, galleryButton;
     private ThirdRegisterationInterface presenter;
     byte[] imageBytes = null;
+    String imagePath = null;
 
     public ThirdRegisterationFragment() {
 
@@ -62,8 +63,7 @@ public class ThirdRegisterationFragment extends Fragment implements ThirdFragmen
 
     private void upload() {
         if (isValid()) {
-            presenter.setData(imageBytes);
-
+            presenter.setData(imageBytes, imagePath);
             ((MainActivity) getActivity()).getMainPresenter().sendToSummary();
         }
     }
@@ -79,6 +79,7 @@ public class ThirdRegisterationFragment extends Fragment implements ThirdFragmen
 
     public void sendData(Bundle bundle) {
         imageBytes = bundle.getByteArray("image");
+        imagePath = bundle.getString("imagePath");
         Glide.with(getContext()).load(imageBytes).into(imageView);
     }
 }

@@ -63,7 +63,6 @@ public class SummaryPresenter implements SummaryPresenterInterface {
         }
         FragmentTransaction transaction =  activityInterface.getSupportFragmentManager()
                 .beginTransaction();
-
         transaction.setCustomAnimations(R.animator.fragment_slide_left_enter,
                 R.animator.fragment_slide_left_exit,
                 R.animator.fragment_slide_right_enter,

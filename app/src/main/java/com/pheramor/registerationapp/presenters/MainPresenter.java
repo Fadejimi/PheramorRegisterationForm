@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -47,6 +48,8 @@ public class MainPresenter implements MainPresenterInterface {
     public static final String THIRD_FRAGMENT_TAG = "third";
     private static final int PICK_IMAGE = 1;
     private Bitmap bitmap;
+    private Uri uri;
+    private static final String TAG = MainPresenter.class.getSimpleName();
 
     public MainPresenter(MainActivityInterface activityInterface) {
         this.activityInterface = activityInterface;
@@ -58,7 +61,7 @@ public class MainPresenter implements MainPresenterInterface {
         FragmentTransaction transaction = activityInterface.getSupportFragmentManager()
                 .beginTransaction();
         transaction.replace(R.id.container, fragment, FIRST_FRAGMENT_TAG);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     @Override
@@ -103,7 +106,8 @@ public class MainPresenter implements MainPresenterInterface {
                 if (bitmap != null) {
                     bitmap.recycle();
                 }
-                stream = activityInterface.getContentResolver().openInputStream(data.getData());
+                uri = data.getData();
+                stream = activityInterface.getContentResolver().openInputStream(uri);
                 bitmap = BitmapFactory.decodeStream(stream);
                 sendImage();
                 //imageView.setImageBitmap(bitmap);
@@ -138,11 +142,35 @@ public class MainPresenter implements MainPresenterInterface {
     private void sendImage() {
         if (bitmap != null) {
             byte[] bitmapBytes = ImageUtil.getBitmapByte(bitmap);
+            String imagePath = getImageFilePath(uri);
+            Log.d(TAG, "imagePath: " + imagePath);
             Bundle bundle = new Bundle();
             bundle.putByteArray("image", bitmapBytes);
+            bundle.putString("imagePath", imagePath);
 
             Fragment fragment = activityInterface.getSupportFragmentManager().findFragmentByTag(THIRD_FRAGMENT_TAG);
             ((ThirdRegisterationFragment) fragment).sendData(bundle);
         }
+
+    }
+
+    public String getImageFilePath(Uri uri) {
+        String path = null, image_id = null;
+
+        Cursor cursor = activityInterface.getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            image_id = cursor.getString(0);
+            image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
+            cursor.close();
+        }
+
+        cursor = activityInterface.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
+        if (cursor!=null) {
+            cursor.moveToFirst();
+            path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor.close();
+        }
+        return path;
     }
 }

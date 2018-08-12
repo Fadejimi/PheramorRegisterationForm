@@ -1,5 +1,7 @@
 package com.pheramor.registerationapp.presenters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import com.pheramor.registerationapp.retrofit.APIClient;
 import com.pheramor.registerationapp.retrofit.UserQuery;
 import com.pheramor.registerationapp.retrofit.models.User;
 import com.pheramor.registerationapp.utils.HashingUtil;
+import com.pheramor.registerationapp.utils.PreferenceUtil;
 import com.pheramor.registerationapp.view_interfaces.OnTaskCompleted;
 import com.pheramor.registerationapp.view_interfaces.SummaryFragmentInterface;
 import com.pheramor.registerationapp.view_interfaces.SummaryFragmentPresenterInterface;
@@ -40,7 +43,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     private byte[] imageBytes;
     private Gson gson;
     private List<Detail> contactDetails, infoDetails, interestedDetails, religionDetails;
-    public static final String filename = "profile_image.jpg";
+    private String filename;
     private static final String TAG = SummaryFragmentPresenter.class.getSimpleName();
 
     public SummaryFragmentPresenter(SummaryFragmentInterface fragment) {
@@ -106,9 +109,15 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
     @Override
     public void submit() {
-        Log.d(TAG, "submit() " );
-        PostToFile postImage = new PostToFile(this);
-        postImage.execute(imageBytes);
+        Log.d(TAG, "submit() ");
+        /*PostToFile postImage = new PostToFile(this);
+        postImage.execute(imageBytes);*/
+        SharedPreferences preferences = fragment.getContext().getSharedPreferences(PreferenceUtil.PREF,
+                Context.MODE_PRIVATE);
+        filename = PreferenceUtil.getImagePath(preferences);
+        Log.d(TAG, "image filename: " + filename);
+        File f = new File(filename);
+        onTaskCompleted(f);
     }
 
     private void sendToFinal() {
@@ -125,8 +134,12 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         if (f != null) {
             Log.d(TAG, "onTaskCompleted()");
             fragment.setProgress(true);
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), f);
-            MultipartBody.Part body = MultipartBody.Part.createFormData("upload",filename, reqFile);
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), f);
+
+            // MultipartBody.Part is used to send also the actual file name
+            MultipartBody.Part body =
+                    MultipartBody.Part.createFormData("image", f.getName(), requestFile);
 
             user.setPassword(HashingUtil.getSecurePassword(user.getPassword()));
             UserQuery query = APIClient.createService(UserQuery.class);
@@ -160,7 +173,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         userMap.put("inchesHeight", String.valueOf(user.getInches_height()));
         userMap.put("genderInterest", combine(user.getGenderInterest()));
         userMap.put("dob", user.getDob());
-        userMap.put("race",  user.getRace());
+        userMap.put("race", user.getRace());
         userMap.put("religion", user.getReligion());
         userMap.put("minRange", String.valueOf(user.getMin_range()));
         userMap.put("maxRange", String.valueOf(user.getMax_range()));
@@ -173,8 +186,9 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         fragment.setProgress(bool);
     }
 
-    private class PostToFile extends AsyncTask<byte[], Void, File> {
+    /*private class PostToFile extends AsyncTask<byte[], Void, File> {
         private SummaryFragmentPresenterInterface listerner;
+
         public PostToFile(SummaryFragmentPresenterInterface listerner) {
             this.listerner = listerner;
         }
@@ -189,23 +203,24 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         protected File doInBackground(byte[]... bytes) {
             try {
                 File f = new File(fragment.getContext().getCacheDir(), filename);
-                boolean sucess = f.createNewFile();
-
-                //write the bytes in file
-                if (sucess) {
-                    FileOutputStream fos = new FileOutputStream(f);
-                    fos.write(bytes[0]);
-                    fos.flush();
-                    fos.close();
-
-                    return f;
+                Log.d(TAG, "onExixts" + f.exists());
+                if (!f.exists()) {
+                    boolean sucess = f.createNewFile();
+                    Log.d(TAG, "onSuccess " + sucess);
                 }
-                return null;
-            }
-            catch (FileNotFoundException ex) {
+
+
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(bytes[0]);
+                fos.flush();
+                fos.close();
+
+                return f;
+
+
+            } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
@@ -221,5 +236,5 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
             }
             Log.d(TAG, "onPostExecute failed");
         }
-    }
+    }*/
 }
