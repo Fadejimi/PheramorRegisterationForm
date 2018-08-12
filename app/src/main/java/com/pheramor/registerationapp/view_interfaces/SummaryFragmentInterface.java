@@ -6,4 +6,5 @@ import android.os.Bundle;
 public interface SummaryFragmentInterface {
     Bundle getArguments();
     Context getContext();
+    void setProgress(boolean bool);
 }

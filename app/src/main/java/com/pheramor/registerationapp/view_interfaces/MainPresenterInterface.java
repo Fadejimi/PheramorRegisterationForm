@@ -9,7 +9,6 @@ public interface MainPresenterInterface {
     void setSecondForm();
     void setThirdForm();
     void sendToSummary();
-    void getImageFromCamera();
     void onActivityResult(Context context, int requestCode, int resultCode, Intent intent);
     void getImageFromGallery();
 }

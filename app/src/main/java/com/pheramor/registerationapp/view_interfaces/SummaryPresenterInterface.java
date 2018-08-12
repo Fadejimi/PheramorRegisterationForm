@@ -4,4 +4,6 @@ public interface SummaryPresenterInterface {
     byte[] getImageByte();
     String getName();
     void setSummaryView();
+    void complete();
+    void restart();
 }

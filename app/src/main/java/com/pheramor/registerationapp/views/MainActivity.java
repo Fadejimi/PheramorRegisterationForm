@@ -1,5 +1,6 @@
 package com.pheramor.registerationapp.views;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void showToast(String message) {
         Toasty.error(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override

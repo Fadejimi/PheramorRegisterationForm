@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 public class PreferenceUtil {
     private static final String KEY = "user_pref";
+    private static final String IMAGE_KEY = "image_pref";
     public static final String PREF = "my_pref";
     public static final int FIRST_FORM = 1;
     public static final int SECOND_FORM = 2;
@@ -24,6 +25,20 @@ public class PreferenceUtil {
             return user;
         }
 
+        return null;
+    }
+
+    public static void putImage(SharedPreferences pref, byte[] imageBytes) {
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(IMAGE_KEY, ImageUtil.encodeImage(imageBytes));
+        editor.apply();
+    }
+
+    public static byte[] getImage(SharedPreferences pref) {
+        String imageString = pref.getString(IMAGE_KEY, null);
+        if (imageString != null) {
+            return ImageUtil.decodeBytes(imageString);
+        }
         return null;
     }
 
@@ -49,9 +64,6 @@ public class PreferenceUtil {
                 oldUser.setMin_range(user.getMin_range());
                 oldUser.setMax_range(user.getMax_range());
                 oldUser.setZipCode(user.getZipCode());
-                break;
-            case THIRD_FORM:
-                oldUser.setPictureString(user.getPictureString());
                 break;
         }
 

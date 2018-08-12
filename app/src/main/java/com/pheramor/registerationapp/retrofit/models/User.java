@@ -16,7 +16,6 @@ public class User {
     private String religion;
     private int min_range;
     private int max_range;
-    private String pictureString;
 
     public String getEmail() {
         return email;
@@ -120,13 +119,5 @@ public class User {
 
     public void setMax_range(int max_range) {
         this.max_range = max_range;
-    }
-
-    public String getPictureString() {
-        return pictureString;
-    }
-
-    public void setPictureString(String pictureString) {
-        this.pictureString = pictureString;
     }
 }

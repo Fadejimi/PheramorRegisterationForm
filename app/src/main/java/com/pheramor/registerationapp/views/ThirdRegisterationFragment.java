@@ -21,7 +21,7 @@ import es.dmoral.toasty.Toasty;
 
 public class ThirdRegisterationFragment extends Fragment implements ThirdFragmentInterface {
     private CircleImageView imageView;
-    private Button uploadButton, cameraButton, galleryButton;
+    private Button uploadButton, galleryButton;
     private ThirdRegisterationInterface presenter;
     byte[] imageBytes = null;
 
@@ -37,15 +37,7 @@ public class ThirdRegisterationFragment extends Fragment implements ThirdFragmen
         View view = inflater.inflate(R.layout.third_registeration_view, container, false);
         imageView = view.findViewById(R.id.profile_image);
         uploadButton = view.findViewById(R.id.upload_button);
-        cameraButton = view.findViewById(R.id.camera_button);
         galleryButton = view.findViewById(R.id.gallery_button);
-
-        cameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                camera();
-            }
-        });
 
         galleryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,10 +54,6 @@ public class ThirdRegisterationFragment extends Fragment implements ThirdFragmen
         });
 
         return view;
-    }
-
-    private void camera() {
-        ((MainActivity) getActivity()).getMainPresenter().getImageFromCamera();
     }
 
     private void gallery() {

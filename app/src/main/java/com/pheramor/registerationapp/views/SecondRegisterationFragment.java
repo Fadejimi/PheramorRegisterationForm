@@ -152,7 +152,7 @@ public class SecondRegisterationFragment extends Fragment implements SecondFragm
             ((MainActivity) getActivity()).getMainPresenter().setThirdForm();
         }
         else {
-            Toasty.error(getContext(), errorString, Toast.LENGTH_LONG, true);
+            Toasty.error(getContext(), errorString, Toast.LENGTH_LONG, true).show();
         }
     }
 

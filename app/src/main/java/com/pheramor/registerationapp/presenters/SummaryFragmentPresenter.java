@@ -1,5 +1,6 @@
 package com.pheramor.registerationapp.presenters;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -8,16 +9,26 @@ import com.pheramor.registerationapp.models.Detail;
 import com.pheramor.registerationapp.retrofit.APIClient;
 import com.pheramor.registerationapp.retrofit.UserQuery;
 import com.pheramor.registerationapp.retrofit.models.User;
+import com.pheramor.registerationapp.utils.HashingUtil;
+import com.pheramor.registerationapp.view_interfaces.OnTaskCompleted;
 import com.pheramor.registerationapp.view_interfaces.SummaryFragmentInterface;
 import com.pheramor.registerationapp.view_interfaces.SummaryFragmentPresenterInterface;
 import com.pheramor.registerationapp.views.SummaryActivity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import es.dmoral.toasty.Toasty;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,8 +36,10 @@ import retrofit2.Response;
 public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterface {
     private SummaryFragmentInterface fragment;
     private User user;
+    private byte[] imageBytes;
     private Gson gson;
     private List<Detail> contactDetails, infoDetails, interestedDetails, religionDetails;
+    public static final String filename = "profile_image.jpg";
 
     public SummaryFragmentPresenter(SummaryFragmentInterface fragment) {
         this.fragment = fragment;
@@ -44,6 +57,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         Bundle bundle = fragment.getArguments();
         if (bundle != null && bundle.getString("user") != null) {
             user = gson.fromJson(bundle.getString("user"), User.class);
+            imageBytes = bundle.getByteArray("image");
             setDetails();
         }
     }
@@ -90,21 +104,8 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
     @Override
     public void submit() {
-        UserQuery query = APIClient.createService(UserQuery.class);
-        Call<Void> call = query.postUser(user);
-
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                sendToFinal();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toasty.error(fragment.getContext(), "Could not send the data",
-                        Toast.LENGTH_SHORT, true);
-            }
-        });
+        PostToFile postImage = new PostToFile(this);
+        postImage.execute(imageBytes);
     }
 
     private void sendToFinal() {
@@ -114,5 +115,97 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     @Override
     public void restart() {
         ((SummaryActivity) fragment.getContext()).getPresenter().restart();
+    }
+
+    @Override
+    public void onTaskCompleted(File f) {
+        if (f != null) {
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), f);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("upload",filename, reqFile);
+
+            user.setPassword(HashingUtil.getSecurePassword(user.getPassword()));
+            UserQuery query = APIClient.createService(UserQuery.class);
+            Call<Void> call = query.postUser(body, getMap(), "https://external.dev.pheramor.com/");
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    sendToFinal();
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toasty.error(fragment.getContext(), "Could not send the data",
+                            Toast.LENGTH_SHORT, true).show();
+                }
+            });
+        }
+    }
+
+    private HashMap<String, String> getMap() {
+        HashMap<String, String> userMap = new HashMap<>();
+        userMap.put("email", user.getEmail());
+        userMap.put("password", user.getPassword());
+        userMap.put("fullName", user.getFullName());
+        userMap.put("gender", user.getGender());
+        userMap.put("zipCode", user.getZipCode());
+        userMap.put("feetHeight", String.valueOf(user.getFeet_height()));
+        userMap.put("inchesHeight", String.valueOf(user.getInches_height()));
+        userMap.put("genderInterest", combine(user.getGenderInterest()));
+        userMap.put("dob", user.getDob());
+        userMap.put("race",  user.getRace());
+        userMap.put("religion", user.getReligion());
+        userMap.put("minRange", String.valueOf(user.getMin_range()));
+        userMap.put("maxRange", String.valueOf(user.getMax_range()));
+
+        return userMap;
+    }
+
+    @Override
+    public void setProgress(boolean bool) {
+        fragment.setProgress(bool);
+    }
+
+    private class PostToFile extends AsyncTask<byte[], Void, File> {
+        private SummaryFragmentPresenterInterface listerner;
+        public PostToFile(SummaryFragmentPresenterInterface listerner) {
+            this.listerner = listerner;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            listerner.setProgress(true);
+        }
+
+        @Override
+        protected File doInBackground(byte[]... bytes) {
+            try {
+                File f = new File(fragment.getContext().getCacheDir(), filename);
+                f.createNewFile();
+
+                //write the bytes in file
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(bytes[0]);
+                fos.flush();
+                fos.close();
+
+                return f;
+            }
+            catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(File f) {
+            super.onPostExecute(f);
+            listerner.setProgress(false);
+            listerner.onTaskCompleted(f);
+        }
     }
 }

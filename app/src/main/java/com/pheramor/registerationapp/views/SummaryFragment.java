@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.pheramor.registerationapp.R;
 import com.pheramor.registerationapp.adapter.SummaryAdapter;
@@ -25,6 +26,7 @@ public class SummaryFragment extends Fragment implements SummaryFragmentInterfac
     Button cancelButton;
     Button submitButton;
     SummaryAdapter contactAdapter, infoAdapter, interestedAdapter, religionsAdapter;
+    private ProgressBar progressBar;
     public SummaryFragment() {
 
     }
@@ -42,6 +44,7 @@ public class SummaryFragment extends Fragment implements SummaryFragmentInterfac
         religious_rv = view.findViewById(R.id.religious_info_rv);
         cancelButton = view.findViewById(R.id.cancel_button);
         submitButton = view.findViewById(R.id.submit_button);
+        progressBar = view.findViewById(R.id.progressBar);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,11 +60,17 @@ public class SummaryFragment extends Fragment implements SummaryFragmentInterfac
             }
         });
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        contact_rv.setLayoutManager(layoutManager);
-        basic_info_rv.setLayoutManager(layoutManager);
-        interested_info_rv.setLayoutManager(layoutManager);
-        religious_rv.setLayoutManager(layoutManager);
+        RecyclerView.LayoutManager contentLayoutManager = new LinearLayoutManager(getContext());
+        contact_rv.setLayoutManager(contentLayoutManager);
+
+        RecyclerView.LayoutManager basicLayoutManager = new LinearLayoutManager(getContext());
+        basic_info_rv.setLayoutManager(basicLayoutManager);
+
+        RecyclerView.LayoutManager interestedLayoutManager = new LinearLayoutManager(getContext());
+        interested_info_rv.setLayoutManager(interestedLayoutManager);
+
+        RecyclerView.LayoutManager religiousLayoutManager = new LinearLayoutManager(getContext());
+        religious_rv.setLayoutManager(religiousLayoutManager);
 
         contact_rv.setItemAnimator(new DefaultItemAnimator());
         basic_info_rv.setItemAnimator(new DefaultItemAnimator());
@@ -100,5 +109,15 @@ public class SummaryFragment extends Fragment implements SummaryFragmentInterfac
 
     private void submit() {
         presenter.submit();
+    }
+
+    @Override
+    public void setProgress(boolean bool) {
+        if (bool) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

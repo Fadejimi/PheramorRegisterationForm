@@ -7,9 +7,9 @@ import java.security.SecureRandom;
 
 public class HashingUtil {
 
-    public static String getSecurePassword(String passwordToHash) {
+    /*public static String getSecurePassword(String passwordToHash) {
         try {
-            return getSecurePassword(passwordToHash, getSalt());
+            return getSecurePassword(passwordToHash);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
@@ -17,7 +17,7 @@ public class HashingUtil {
         }
 
         return passwordToHash;
-    }
+    }*/
 
     private static byte[] getSalt() throws NoSuchAlgorithmException, NoSuchProviderException
     {
@@ -31,14 +31,14 @@ public class HashingUtil {
         return salt;
     }
 
-    private static String getSecurePassword(String passwordToHash, byte[] salt)
+    private static String getSecurePassword(String passwordToHash)
     {
         String generatedPassword = null;
         try {
             // Create MessageDigest instance for MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
             //Add password bytes to digest
-            md.update(salt);
+            //md.update(salt);
             //Get the hash's bytes
             byte[] bytes = md.digest(passwordToHash.getBytes());
             //This bytes[] has bytes in decimal format;

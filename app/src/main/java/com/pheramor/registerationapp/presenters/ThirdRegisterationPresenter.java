@@ -18,11 +18,8 @@ public class ThirdRegisterationPresenter implements ThirdRegisterationInterface 
 
     @Override
     public void setData(byte[] imageBytes) {
-        User user = new User();
-        user.setPictureString(ImageUtil.encodeImage(imageBytes));
-
         SharedPreferences preferences = fragment.getContext().getSharedPreferences(PreferenceUtil.PREF,
                 Context.MODE_PRIVATE);
-        PreferenceUtil.putUser(preferences, PreferenceUtil.THIRD_FORM, user);
+        PreferenceUtil.putImage(preferences, imageBytes);
     }
 }

@@ -34,25 +34,17 @@
             android:textAllCaps="true"/>
 
         <Button
-            android:id="@+id/camera_button"
+            android:id="@+id/upload_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_linear"
             android:layout_margin="10dp"
             style="@style/App_ButtonStyle"
-            android:text="@string/camera"
+            android:text="@string/upload"
             android:padding="10dp"
             android:textAllCaps="true"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/upload_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_linear"
-        android:layout_margin="10dp"
-        style="@style/App_ButtonStyle"
-        android:text="@string/upload"
-        android:padding="10dp"
-        android:textAllCaps="true"/>
+
 </RelativeLayout>

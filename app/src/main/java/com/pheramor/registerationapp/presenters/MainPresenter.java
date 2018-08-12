@@ -1,14 +1,21 @@
 package com.pheramor.registerationapp.presenters;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.pheramor.registerationapp.R;
 import com.pheramor.registerationapp.utils.ImageUtil;
@@ -20,19 +27,27 @@ import com.pheramor.registerationapp.views.SecondRegisterationFragment;
 import com.pheramor.registerationapp.views.SummaryActivity;
 import com.pheramor.registerationapp.views.ThirdRegisterationFragment;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import es.dmoral.toasty.Toasty;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class MainPresenter implements MainPresenterInterface {
     private MainActivityInterface activityInterface;
     public static final String FIRST_FRAGMENT_TAG = "first";
     public static final String SECOND_FRAGMENT_TAG = "second";
     public static final String THIRD_FRAGMENT_TAG = "third";
-    private static final long MOVE_DEFAULT_TIME = 1000;
-    private static final long FADE_DEFAULT_TIME = 300;
-    private static final int REQUEST_CODE = 1;
+    private static final int PICK_IMAGE = 1;
     private Bitmap bitmap;
+
     public MainPresenter(MainActivityInterface activityInterface) {
         this.activityInterface = activityInterface;
     }
@@ -41,7 +56,7 @@ public class MainPresenter implements MainPresenterInterface {
     public void setFirstForm() {
         Fragment fragment = new FirstRegisterationFragment();
         FragmentTransaction transaction = activityInterface.getSupportFragmentManager()
-                                        .beginTransaction();
+                .beginTransaction();
         transaction.replace(R.id.container, fragment, FIRST_FRAGMENT_TAG);
         transaction.commit();
     }
@@ -49,7 +64,7 @@ public class MainPresenter implements MainPresenterInterface {
     @Override
     public void setSecondForm() {
         Fragment fragment = new SecondRegisterationFragment();
-        FragmentTransaction transaction =  activityInterface.getSupportFragmentManager()
+        FragmentTransaction transaction = activityInterface.getSupportFragmentManager()
                 .beginTransaction();
         transaction.setCustomAnimations(R.animator.fragment_slide_left_enter,
                 R.animator.fragment_slide_left_exit,
@@ -63,7 +78,7 @@ public class MainPresenter implements MainPresenterInterface {
     @Override
     public void setThirdForm() {
         Fragment fragment = new ThirdRegisterationFragment();
-        FragmentTransaction transaction =  activityInterface.getSupportFragmentManager()
+        FragmentTransaction transaction = activityInterface.getSupportFragmentManager()
                 .beginTransaction();
         transaction.setCustomAnimations(R.animator.fragment_slide_left_enter,
                 R.animator.fragment_slide_left_exit,
@@ -81,20 +96,10 @@ public class MainPresenter implements MainPresenterInterface {
     }
 
     @Override
-    public void getImageFromCamera() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        activityInterface.startActivityForResult(intent, REQUEST_CODE);
-    }
-
-    @Override
     public void onActivityResult(Context context, int requestCode, int resultCode, Intent data) {
         InputStream stream = null;
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_IMAGE) {
             try {
-                // recyle unused bitmaps
                 if (bitmap != null) {
                     bitmap.recycle();
                 }
@@ -104,10 +109,9 @@ public class MainPresenter implements MainPresenterInterface {
                 //imageView.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 if (stream != null)
                     try {
                         stream.close();
@@ -126,7 +130,7 @@ public class MainPresenter implements MainPresenterInterface {
             gintent.setAction(Intent.ACTION_GET_CONTENT);
             activityInterface.startActivityForResult(
                     Intent.createChooser(gintent, "Select Picture"),
-                    REQUEST_CODE);
+                    PICK_IMAGE);
         } catch (Exception e) {
             activityInterface.showToast("Could not find gallery");
             Log.e(e.getClass().getName(), e.getMessage(), e);

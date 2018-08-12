@@ -9,8 +9,14 @@ import com.pheramor.registerationapp.view_interfaces.FirstFragmentInterface;
 import com.pheramor.registerationapp.view_interfaces.FirstRegisterationInterface;
 import com.pheramor.registerationapp.views.FirstRegisterationFragment;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FirstRegisterationPresenter implements FirstRegisterationInterface {
     private FirstFragmentInterface fragment;
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
     public FirstRegisterationPresenter(FirstFragmentInterface fragment) {
         this.fragment = fragment;
     }
@@ -45,17 +51,17 @@ public class FirstRegisterationPresenter implements FirstRegisterationInterface 
     @Override
     public String setValid(String name, String email, String password, String confirm, String race,
                            String religion, String height, String dob) {
-        String errorString = "";
-        if (name.isEmpty()) errorString = "Please enter the name";
-        if (email.isEmpty()) errorString = "Please enter your email";
-        if (password.isEmpty()) errorString = "Please enter your password";
-        if (!password.equals(confirm)) errorString = "Please ensure password is the same as confirm password";
-        if (race.isEmpty()) errorString = "Please enter the race";
-        if (religion.isEmpty()) errorString = "Please enter the religion";
-        if (height.isEmpty()) errorString = "Please enter your height";
-        if (dob.isEmpty()) errorString = "Please enter your date of birth";
+        if (name != null && name.isEmpty()) return "Please enter the name";
+        if (email != null && email.isEmpty()) return "Please enter your email";
+        if (email != null && !validateEmail(email)) return "Email is not valid";
+        if (password != null && password.isEmpty()) return "Please enter your password";
+        if (password != null && !password.equals(confirm)) return "Please ensure password is the same as confirm password";
+        if (race != null && race.isEmpty()) return "Please enter the race";
+        if (religion != null && religion.isEmpty()) return "Please enter the religion";
+        if (height != null && height.isEmpty()) return "Please enter your height";
+        if (dob != null && dob.isEmpty()) return "Please enter your date of birth";
 
-        return errorString;
+        return "";
     }
 
     @Override
@@ -74,6 +80,11 @@ public class FirstRegisterationPresenter implements FirstRegisterationInterface 
         SharedPreferences preferences = ((FirstRegisterationFragment) fragment).getActivity().getSharedPreferences(
                 PreferenceUtil.PREF, Context.MODE_PRIVATE);
         PreferenceUtil.putUser(preferences, PreferenceUtil.FIRST_FORM, user);
+    }
+
+    public static boolean validateEmail(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(emailStr);
+        return matcher.find();
     }
 
     @Override
