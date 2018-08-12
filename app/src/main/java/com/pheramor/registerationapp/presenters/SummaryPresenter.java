@@ -37,10 +37,10 @@ public class SummaryPresenter implements SummaryPresenterInterface {
     }
 
     @Override
-    public byte[] getImageByte() {
+    public String getImagePath() {
         SharedPreferences preferences = activityInterface.getContext().getSharedPreferences(
                 PreferenceUtil.PREF, Context.MODE_PRIVATE);
-        return PreferenceUtil.getImage(preferences);
+        return PreferenceUtil.getImagePath(preferences);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SummaryPresenter implements SummaryPresenterInterface {
             String userString = gson.toJson(user, User.class);
             Bundle bundle = new Bundle();
             bundle.putString("user", userString);
-            bundle.putByteArray("image", getImageByte());
+            bundle.putString("imagePath", getImagePath());
             fragment.setArguments(bundle);
         }
         FragmentTransaction transaction =  activityInterface.getSupportFragmentManager()

@@ -30,7 +30,7 @@ public class SummaryActivity extends AppCompatActivity implements SummaryActivit
         imageView = findViewById(R.id.profile_image);
         nameTextView = findViewById(R.id.nameTextView);
 
-        Glide.with(SummaryActivity.this).load(presenter.getImageByte())
+        Glide.with(SummaryActivity.this).load(presenter.getImagePath())
                 .into(imageView);
         nameTextView.setText(presenter.getName());
 

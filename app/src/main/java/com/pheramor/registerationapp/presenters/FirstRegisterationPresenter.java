@@ -53,7 +53,7 @@ public class FirstRegisterationPresenter implements FirstRegisterationInterface 
                            String religion, String height, String dob) {
         if (name != null && name.isEmpty()) return "Please enter the name";
         if (email != null && email.isEmpty()) return "Please enter your email";
-        if (email != null && !validateEmail(email)) return "Email is not valid";
+        if (email != null && !validateEmail(email.trim())) return "Email is not valid";
         if (password != null && password.isEmpty()) return "Please enter your password";
         if (password != null && !password.equals(confirm)) return "Please ensure password is the same as confirm password";
         if (race != null && race.isEmpty()) return "Please enter the race";

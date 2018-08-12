@@ -17,10 +17,10 @@ public class ThirdRegisterationPresenter implements ThirdRegisterationInterface 
     }
 
     @Override
-    public void setData(byte[] imageBytes, String imagePath) {
+    public void setData(String imagePath) {
         SharedPreferences preferences = fragment.getContext().getSharedPreferences(PreferenceUtil.PREF,
                 Context.MODE_PRIVATE);
-        PreferenceUtil.putImage(preferences, imageBytes);
+        //PreferenceUtil.putImage(preferences, imageBytes);
         PreferenceUtil.putImagePath(preferences, imagePath);
     }
 }

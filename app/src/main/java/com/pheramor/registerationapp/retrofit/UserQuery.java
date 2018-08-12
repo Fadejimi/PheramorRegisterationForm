@@ -16,6 +16,5 @@ import retrofit2.http.Url;
 public interface UserQuery {
     @Multipart
     @POST
-    Call<Void> postUser(@Part MultipartBody.Part image, @QueryMap Map<String, String> queryParams,
-                        @Url String url);
+    Call<Void> postUser(@Part MultipartBody.Part image, @Url String url);
 }

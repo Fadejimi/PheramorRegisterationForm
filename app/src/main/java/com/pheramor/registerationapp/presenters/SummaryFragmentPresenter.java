@@ -40,7 +40,7 @@ import retrofit2.Response;
 public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterface {
     private SummaryFragmentInterface fragment;
     private User user;
-    private byte[] imageBytes;
+    //private byte[] imageBytes;
     private Gson gson;
     private List<Detail> contactDetails, infoDetails, interestedDetails, religionDetails;
     private String filename;
@@ -62,7 +62,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
         Bundle bundle = fragment.getArguments();
         if (bundle != null && bundle.getString("user") != null) {
             user = gson.fromJson(bundle.getString("user"), User.class);
-            imageBytes = bundle.getByteArray("image");
+            //imageBytes = bundle.getByteArray("image");
             setDetails();
         }
     }
@@ -110,8 +110,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     @Override
     public void submit() {
         Log.d(TAG, "submit() ");
-        /*PostToFile postImage = new PostToFile(this);
-        postImage.execute(imageBytes);*/
+
         SharedPreferences preferences = fragment.getContext().getSharedPreferences(PreferenceUtil.PREF,
                 Context.MODE_PRIVATE);
         filename = PreferenceUtil.getImagePath(preferences);
@@ -143,7 +142,7 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
 
             user.setPassword(HashingUtil.getSecurePassword(user.getPassword()));
             UserQuery query = APIClient.createService(UserQuery.class);
-            Call<Void> call = query.postUser(body, getMap(), "https://external.dev.pheramor.com/");
+            Call<Void> call = query.postUser(body, "https://external.dev.pheramor.com/");
 
             call.enqueue(new Callback<Void>() {
                 @Override
@@ -185,56 +184,4 @@ public class SummaryFragmentPresenter implements SummaryFragmentPresenterInterfa
     public void setProgress(boolean bool) {
         fragment.setProgress(bool);
     }
-
-    /*private class PostToFile extends AsyncTask<byte[], Void, File> {
-        private SummaryFragmentPresenterInterface listerner;
-
-        public PostToFile(SummaryFragmentPresenterInterface listerner) {
-            this.listerner = listerner;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            listerner.setProgress(true);
-        }
-
-        @Override
-        protected File doInBackground(byte[]... bytes) {
-            try {
-                File f = new File(fragment.getContext().getCacheDir(), filename);
-                Log.d(TAG, "onExixts" + f.exists());
-                if (!f.exists()) {
-                    boolean sucess = f.createNewFile();
-                    Log.d(TAG, "onSuccess " + sucess);
-                }
-
-
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(bytes[0]);
-                fos.flush();
-                fos.close();
-
-                return f;
-
-
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(File f) {
-            if (f != null) {
-                Log.d(TAG, "onPostExecute called");
-                super.onPostExecute(f);
-                listerner.setProgress(false);
-                listerner.onTaskCompleted(f);
-            }
-            Log.d(TAG, "onPostExecute failed");
-        }
-    }*/
 }

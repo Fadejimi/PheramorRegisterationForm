@@ -28,11 +28,11 @@ public class PreferenceUtil {
         return null;
     }
 
-    public static void putImage(SharedPreferences pref, byte[] imageBytes) {
+    /*public static void putImage(SharedPreferences pref, byte[] imageBytes) {
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(IMAGE_KEY, ImageUtil.encodeImage(imageBytes));
         editor.apply();
-    }
+    }*/
 
     public static void putImagePath(SharedPreferences pref, String imagePath) {
         SharedPreferences.Editor editor = pref.edit();
@@ -43,13 +43,14 @@ public class PreferenceUtil {
     public static String getImagePath(SharedPreferences pref) {
         return pref.getString(IMAGE_PATH, null);
     }
-    public static byte[] getImage(SharedPreferences pref) {
+
+    /*public static byte[] getImage(SharedPreferences pref) {
         String imageString = pref.getString(IMAGE_KEY, null);
         if (imageString != null) {
             return ImageUtil.decodeBytes(imageString);
         }
         return null;
-    }
+    }*/
 
     public static void putUser(SharedPreferences pref, int form_number, User user) {
         User oldUser = getUser(pref);
