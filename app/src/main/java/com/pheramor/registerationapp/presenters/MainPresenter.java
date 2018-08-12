@@ -107,8 +107,6 @@ public class MainPresenter implements MainPresenterInterface {
                 bitmap = BitmapFactory.decodeStream(stream);
                 sendImage();
                 //imageView.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

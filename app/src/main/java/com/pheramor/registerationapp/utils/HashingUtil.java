@@ -31,7 +31,7 @@ public class HashingUtil {
         return salt;
     }
 
-    private static String getSecurePassword(String passwordToHash)
+    public static String getSecurePassword(String passwordToHash)
     {
         String generatedPassword = null;
         try {
